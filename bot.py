@@ -77,4 +77,22 @@ app.add_handler(CommandHandler("get_1", get_video))
 app.add_handler(CommandHandler("get_2", get_video))
 app.add_handler(CommandHandler("get_3", get_video))
 app.add_handler(CommandHandler("ongeza", ongeza))
-app.run_polling()
+app.run_polling()async def get_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    points = await get_user(user_id)
+
+    if points is None:
+        await update.message.reply_text("Tuma /start kwanza.")
+        return
+
+    if points >= 250:
+        await deduct_points(user_id, 250)
+        new_points = points - 250
+        await update.message.reply_text(
+            "✅ Umepokea *Video A* 🎥\n"
+            "🔗 Link: https://example.com/videoA.mp4\n\n"
+            f"📉 Salio lako sasa: *{new_points} points*",
+            parse_mode="Markdown"
+        )
+    else:
+        await update.message.reply_text("🚫 Huna points za kutosha. Tumia /ongeza kuongeza points.")
