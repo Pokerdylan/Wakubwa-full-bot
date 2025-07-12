@@ -21,7 +21,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text(f"Karibu tena {first_name}!\n\n📌 Points zako: {row[0]}")
 
-# 👉 VIDEOS LIST
+# 👉 VIDEOS COMMAND
 async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎬 Orodha ya Video:\n"
@@ -52,25 +52,24 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await db.execute("UPDATE users SET points = ? WHERE user_id = ?", (points - 250, user_id))
         await db.commit()
 
-        video_links = {
-            "/get_1": "🔥 Video A: https://example.com/videoA.mp4",
-            "/get_2": "🍑 Video B: https://example.com/videoB.mp4",
-            "/get_3": "💦 Video C: https://example.com/videoC.mp4",
-        }
+        video_name = {
+            "/get_1": "Video A: https://example.com/videoA.mp4",
+            "/get_2": "Video B: https://example.com/videoB.mp4",
+            "/get_3": "Video C: https://example.com/videoC.mp4",
+        }.get(command, "Haipo")
 
-        selected_video = video_links.get(command, "Video haipo.")
         await update.message.reply_text(
-            f"✅ Umepokea {selected_video}\n\n📉 Salio: {points - 250} points"
+            f"✅ Umepokea {video_name}\n\n📉 Salio: {points - 250} points"
         )
 
-# 👉 ONGEZA POINTS
+# 👉 ONGEZA POINTS (placeholder kwa sasa)
 async def ongeza(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "💳 Nunua points zaidi kwa kutuma Tsh. 1,000 au zaidi.\n"
         "Utapewa points sawa na kiasi ulicholipia.\n\n(Coming soon 💰)"
     )
 
-# 👉 SETUP BOT
+# 🧠 MAIN APP STARTS HERE
 app = ApplicationBuilder().token("8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("videos", videos))
@@ -79,13 +78,21 @@ app.add_handler(CommandHandler("get_2", get_video))
 app.add_handler(CommandHandler("get_3", get_video))
 app.add_handler(CommandHandler("ongeza", ongeza))
 
-# 👉 CREATE DATABASE TABLE
-async def create_db():
+import asyncio
+
+async def main():
+    # Unda DB na Anzisha bot
+    await start_db()
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+    await app.updater.idle()
+
+# DB initialize function
+async def start_db():
     async with aiosqlite.connect("database.db") as db:
         await db.execute("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)")
         await db.commit()
 
-# 👉 RUN EVERYTHING
-import asyncio
-asyncio.run(create_db())
-app.run_polling()
+# Run the bot
+asyncio.run(main())
