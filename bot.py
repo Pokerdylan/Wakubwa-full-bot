@@ -77,7 +77,7 @@ app.add_handler(CommandHandler("get_1", get_video))
 app.add_handler(CommandHandler("get_2", get_video))
 app.add_handler(CommandHandler("get_3", get_video))
 app.add_handler(CommandHandler("ongeza", ongeza))
-app.run_polling()async def get_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+app.async def get_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     points = await get_user(user_id)
 
@@ -95,4 +95,4 @@ app.run_polling()async def get_1(update: Update, context: ContextTypes.DEFAULT_T
             parse_mode="Markdown"
         )
     else:
-        await update.message.reply_text("🚫 Huna points za kutosha. Tumia /ongeza kuongeza points.")
+        await update.message.reply_text("🚫 Huna points za kutosha. Tumia /ongeza kuongeza points.")run_polling()
