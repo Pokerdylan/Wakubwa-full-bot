@@ -70,7 +70,7 @@ async def ongeza(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # 🧠 MAIN APP STARTS HERE
-app = ApplicationBuilder().token(8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI).build()
+app = ApplicationBuilder().token("8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("videos", videos))
 app.add_handler(CommandHandler("get_1", get_video))
