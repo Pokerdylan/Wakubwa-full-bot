@@ -30,7 +30,7 @@ async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "3. 💦 Video C - 250 points → /get_3"
     )
 
-# 👉 GET VIDEO HANDLER
+# 👉 GET VIDEO COMMAND
 async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     command = update.message.text
@@ -62,14 +62,14 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✅ Umepokea {video_name}\n\n📉 Salio: {points - 250} points"
         )
 
-# 👉 ONGEZA POINTS (placeholder kwa sasa)
+# 👉 ONGEZA POINTS
 async def ongeza(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "💳 Nunua points zaidi kwa kutuma Tsh. 1,000 au zaidi.\n"
         "Utapewa points sawa na kiasi ulicholipia.\n\n(Coming soon 💰)"
     )
 
-# 🧠 MAIN APP STARTS HERE
+# ✅ TELEGRAM BOT SETUP
 app = ApplicationBuilder().token("8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("videos", videos))
@@ -77,22 +77,6 @@ app.add_handler(CommandHandler("get_1", get_video))
 app.add_handler(CommandHandler("get_2", get_video))
 app.add_handler(CommandHandler("get_3", get_video))
 app.add_handler(CommandHandler("ongeza", ongeza))
-app.async def get_1(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    points = await get_user(user_id)
 
-    if points is None:
-        await update.message.reply_text("Tuma /start kwanza.")
-        return
-
-    if points >= 250:
-        await deduct_points(user_id, 250)
-        new_points = points - 250
-        await update.message.reply_text(
-            "✅ Umepokea *Video A* 🎥\n"
-            "🔗 Link: https://example.com/videoA.mp4\n\n"
-            f"📉 Salio lako sasa: *{new_points} points*",
-            parse_mode="Markdown"
-        )
-    else:
-        await update.message.reply_text("🚫 Huna points za kutosha. Tumia /ongeza kuongeza points.")run_polling()
+# ✅ RUN
+app.run_polling()
