@@ -21,7 +21,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             await update.message.reply_text(f"Karibu tena {first_name}!\n\n📌 Points zako: {row[0]}")
 
-# 👉 VIDEOS COMMAND
+# 👉 VIDEOS LIST
 async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎬 Orodha ya Video:\n"
@@ -30,7 +30,7 @@ async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "3. 💦 Video C - 250 points → /get_3"
     )
 
-# 👉 GET VIDEO COMMAND
+# 👉 GET VIDEO HANDLER
 async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     command = update.message.text
@@ -52,14 +52,15 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await db.execute("UPDATE users SET points = ? WHERE user_id = ?", (points - 250, user_id))
         await db.commit()
 
-        video_name = {
-            "/get_1": "Video A: https://example.com/videoA.mp4",
-            "/get_2": "Video B: https://example.com/videoB.mp4",
-            "/get_3": "Video C: https://example.com/videoC.mp4",
-        }.get(command, "Haipo")
+        video_links = {
+            "/get_1": "🔥 Video A: https://example.com/videoA.mp4",
+            "/get_2": "🍑 Video B: https://example.com/videoB.mp4",
+            "/get_3": "💦 Video C: https://example.com/videoC.mp4",
+        }
 
+        selected_video = video_links.get(command, "Video haipo.")
         await update.message.reply_text(
-            f"✅ Umepokea {video_name}\n\n📉 Salio: {points - 250} points"
+            f"✅ Umepokea {selected_video}\n\n📉 Salio: {points - 250} points"
         )
 
 # 👉 ONGEZA POINTS
@@ -69,7 +70,7 @@ async def ongeza(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "Utapewa points sawa na kiasi ulicholipia.\n\n(Coming soon 💰)"
     )
 
-# ✅ TELEGRAM BOT SETUP
+# 👉 SETUP BOT
 app = ApplicationBuilder().token("8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI").build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(CommandHandler("videos", videos))
@@ -78,5 +79,13 @@ app.add_handler(CommandHandler("get_2", get_video))
 app.add_handler(CommandHandler("get_3", get_video))
 app.add_handler(CommandHandler("ongeza", ongeza))
 
-# ✅ RUN
+# 👉 CREATE DATABASE TABLE
+async def create_db():
+    async with aiosqlite.connect("database.db") as db:
+        await db.execute("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)")
+        await db.commit()
+
+# 👉 RUN EVERYTHING
+import asyncio
+asyncio.run(create_db())
 app.run_polling()
