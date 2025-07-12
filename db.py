@@ -30,4 +30,4 @@ async def deduct_points(user_id, amount):
 async def add_points(user_id, amount):
     async with aiosqlite.connect("users.db") as db:
         await db.execute("UPDATE users SET points = points + ? WHERE user_id = ?", (amount, user_id))
-        await db.commit()
+        await db.commit() 
