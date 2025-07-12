@@ -2,13 +2,18 @@ import aiosqlite
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-# 👉 START COMMAND
+TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"  # Weka token yako hapa
+
+# Command /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     first_name = update.effective_user.first_name
 
     async with aiosqlite.connect("database.db") as db:
-        await db.execute("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)")
+        # Unda table kama haipo
+        await db.execute(
+            "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)"
+        )
         await db.commit()
 
         cursor = await db.execute("SELECT points FROM users WHERE user_id = ?", (user_id,))
@@ -17,11 +22,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if row is None:
             await db.execute("INSERT INTO users (user_id, points) VALUES (?, ?)", (user_id, 1000))
             await db.commit()
-            await update.message.reply_text(f"Hii ni demo! Karibu {first_name}.\n\n🎁 Umepewa 1000 points bure!")
+            await update.message.reply_text(
+                f"Hii ni demo! Karibu {first_name}.\n\n🎁 Umepewa 1000 points bure!"
+            )
         else:
-            await update.message.reply_text(f"Karibu tena {first_name}!\n\n📌 Points zako: {row[0]}")
+            await update.message.reply_text(
+                f"Karibu tena {first_name}!\n\n📌 Points zako: {row[0]}"
+            )
 
-# 👉 VIDEOS COMMAND
+# Command /videos
 async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎬 Orodha ya Video:\n"
@@ -30,7 +39,7 @@ async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "3. 💦 Video C - 250 points → /get_3"
     )
 
-# 👉 GET VIDEO HANDLER
+# Handler kwa /get_1, /get_2, /get_3
 async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     command = update.message.text
@@ -62,37 +71,20 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✅ Umepokea {video_name}\n\n📉 Salio: {points - 250} points"
         )
 
-# 👉 ONGEZA POINTS (placeholder kwa sasa)
+# Command /ongeza
 async def ongeza(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "💳 Nunua points zaidi kwa kutuma Tsh. 1,000 au zaidi.\n"
         "Utapewa points sawa na kiasi ulicholipia.\n\n(Coming soon 💰)"
     )
 
-# 🧠 MAIN APP STARTS HERE
-app = ApplicationBuilder().token("8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI").build()
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("videos", videos))
-app.add_handler(CommandHandler("get_1", get_video))
-app.add_handler(CommandHandler("get_2", get_video))
-app.add_handler(CommandHandler("get_3", get_video))
-app.add_handler(CommandHandler("ongeza", ongeza))
-
-import asyncio
-
-async def main():
-    # Unda DB na Anzisha bot
-    await start_db()
-    await app.initialize()
-    await app.start()
-    await app.updater.start_polling()
-    await app.updater.idle()
-
-# DB initialize function
-async def start_db():
-    async with aiosqlite.connect("database.db") as db:
-        await db.execute("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)")
-        await db.commit()
-
-# Run the bot
-asyncio.run(main())
+# Setup bot application na handlers
+if __name__ == "__main__":
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("videos", videos))
+    app.add_handler(CommandHandler("get_1", get_video))
+    app.add_handler(CommandHandler("get_2", get_video))
+    app.add_handler(CommandHandler("get_3", get_video))
+    app.add_handler(CommandHandler("ongeza", ongeza))
+    app.run_polling()
