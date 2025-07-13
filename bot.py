@@ -77,7 +77,15 @@ def main():
     app.add_handler(CommandHandler("get_1", get_video))
     app.add_handler(CommandHandler("get_2", get_video))
     app.add_handler(CommandHandler("get_3", get_video))
-    app.add_handler(CommandHandler("ongeza", ongeza))
+    app.add_handler(CommandHandler("ongeza", ongeza)) async def salio(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    async with aiosqlite.connect("database.db") as db:
+        cursor = await db.execute("SELECT points FROM users WHERE user_id = ?", (user_id,))
+        row = await cursor.fetchone()
+        if row:
+            await update.message.reply_text(f"📌 Salio lako ni: {row[0]} points")
+        else:
+            await update.message.reply_text("Tuma /start kwanza ili upate points.")
     app.run_polling()
 
 if __name__ == "__main__":
