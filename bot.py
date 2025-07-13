@@ -78,7 +78,7 @@ def main():
     app.add_handler(CommandHandler("get_2", get_video))
     app.add_handler(CommandHandler("get_3", get_video))
     app.add_handler(CommandHandler("ongeza", ongeza))
-app.add_handler(CommandHandler("salio", salio))
+    app.add_handler(CommandHandler("salio", salio))
     app.run_polling()
 
 if __name__ == "__main__":
