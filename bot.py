@@ -63,8 +63,8 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         video_name = {
     "/get_1": "Video A: https://t.me/c/2340537863/5",
-    "/get_2": "Video B: https://example.com/videoB.mp4",
-    "/get_3": "Video C: https://example.com/videoC.mp4",
+    "/get_2": "Video B: https://t.me/c/2340537863/5",
+    "/get_3": "Video C: https://t.me/c/2340537863/5",
 }.get(command, "Haipo")
 
         await update.message.reply_text(
