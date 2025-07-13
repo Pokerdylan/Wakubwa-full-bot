@@ -1,21 +1,24 @@
 import aiosqlite
+import asyncio
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"  # Weka token yako hapa
+TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"
 
-# Command /start
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_id = update.effective_user.id
-    first_name = update.effective_user.first_name
-
+# 🟢 Init database table
+async def init_db():
     async with aiosqlite.connect("database.db") as db:
-        # Unda table kama haipo
         await db.execute(
             "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)"
         )
         await db.commit()
 
+# 🟩 /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    first_name = update.effective_user.first_name
+
+    async with aiosqlite.connect("database.db") as db:
         cursor = await db.execute("SELECT points FROM users WHERE user_id = ?", (user_id,))
         row = await cursor.fetchone()
 
@@ -30,7 +33,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Karibu tena {first_name}!\n\n📌 Points zako: {row[0]}"
             )
 
-# Command /videos
+# 🟦 /videos
 async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎬 Orodha ya Video:\n"
@@ -39,7 +42,7 @@ async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "3. 💦 Video C - 250 points → /get_3"
     )
 
-# Handler kwa /get_1, /get_2, /get_3
+# 🟥 /get_1 /get_2 /get_3
 async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     command = update.message.text
@@ -53,7 +56,6 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         points = row[0]
-
         if points < 250:
             await update.message.reply_text("😥 Huna points za kutosha. Tuma /ongeza kupata points zaidi.")
             return
@@ -62,24 +64,26 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await db.commit()
 
         video_name = {
-    "/get_1": "Video A: https://t.me/c/2340537863/5",
-    "/get_2": "Video B: https://t.me/c/2340537863/5",
-    "/get_3": "Video C: https://t.me/c/2340537863/5",
-}.get(command, "Haipo")
+            "/get_1": "Video A: https://t.me/c/2340537863/5",
+            "/get_2": "Video B: https://t.me/c/2340537863/5",
+            "/get_3": "Video C: https://t.me/c/2340537863/5",
+        }.get(command, "Haipo")
 
         await update.message.reply_text(
             f"✅ Umepokea {video_name}\n\n📉 Salio: {points - 250} points"
         )
 
-# Command /ongeza
+# 🟨 /ongeza
 async def ongeza(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "💳 Nunua points zaidi kwa kutuma Tsh. 1,000 au zaidi.\n"
         "Utapewa points sawa na kiasi ulicholipia.\n\n(Coming soon 💰)"
     )
 
-# Setup bot application na handlers
+# 🚀 Start bot
 if __name__ == "__main__":
+    asyncio.run(init_db())  # Ensure table exists
+
     app = ApplicationBuilder().token(TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("videos", videos))
