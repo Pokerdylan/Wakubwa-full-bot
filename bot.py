@@ -1,17 +1,19 @@
-import aiosqlite
 import asyncio
+import aiosqlite
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"  # Weka token yako hapa
+TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"  # Token yako
 
-# /start command
+# /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     first_name = update.effective_user.first_name
 
     async with aiosqlite.connect("database.db") as db:
-        await db.execute("CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)")
+        await db.execute(
+            "CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY, points INTEGER)"
+        )
         await db.commit()
 
         cursor = await db.execute("SELECT points FROM users WHERE user_id = ?", (user_id,))
@@ -28,7 +30,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 f"Karibu tena {first_name}!\n\n📌 Points zako: {row[0]}"
             )
 
-# /videos command
+# /videos
 async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🎬 Orodha ya Video:\n"
@@ -37,7 +39,7 @@ async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "3. 💦 Video C - 250 points → /get_3"
     )
 
-# get_1, get_2, get_3 handler
+# /get_1, /get_2, /get_3
 async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     command = update.message.text
@@ -51,7 +53,6 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         points = row[0]
-
         if points < 250:
             await update.message.reply_text("😥 Huna points za kutosha. Tuma /ongeza kupata points zaidi.")
             return
@@ -69,14 +70,14 @@ async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✅ Umepokea {video_name}\n\n📉 Salio: {points - 250} points"
         )
 
-# /ongeza command
+# /ongeza
 async def ongeza(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "💳 Nunua points zaidi kwa kutuma Tsh. 1,000 au zaidi.\n"
         "Utapewa points sawa na kiasi ulicholipia.\n\n(Coming soon 💰)"
     )
 
-# ✅ MAIN FUNCTION - inatumia asyncio.run() kuepuka error ya event loop
+# MAIN FUNCTION
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -87,8 +88,10 @@ async def main():
     app.add_handler(CommandHandler("get_3", get_video))
     app.add_handler(CommandHandler("ongeza", ongeza))
 
-    print("✅ Bot is running...")
-    await app.run_polling()
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+    await app.updater.idle()
 
 if __name__ == "__main__":
     asyncio.run(main())
