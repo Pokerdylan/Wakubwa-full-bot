@@ -96,7 +96,3 @@ async def main():
     app.add_handler(CommandHandler("ongeza", ongeza))
     app.add_handler(CommandHandler("salio", salio))
     await app.run_polling()
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
