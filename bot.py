@@ -95,4 +95,4 @@ async def main():
     app.add_handler(CommandHandler("get_3", get_video))
     app.add_handler(CommandHandler("ongeza", ongeza))
     app.add_handler(CommandHandler("salio", salio))
-    await app.run_polling()
+     app.run_polling()
