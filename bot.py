@@ -2,7 +2,7 @@ import aiosqlite
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = "weka_token_yako_hapa"
+TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"
 
 # /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
