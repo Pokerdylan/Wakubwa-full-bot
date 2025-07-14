@@ -1,4 +1,6 @@
-import aiosqlite from telegram import Update from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import aiosqlite
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"
 
