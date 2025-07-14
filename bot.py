@@ -4,7 +4,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 TOKEN = "8192573503:AAGkm4M2XV922PViP8Gc2cVQEWoP0MVwvMI"
 
-/start
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE): user_id = update.effective_user.id first_name = update.effective_user.first_name
 
