@@ -87,9 +87,8 @@ async def salio(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("Tuma /start kwanza ili upate points.")
 
 # RUN APP
-async def main():
+if __name__ == "__main__":
     app = ApplicationBuilder().token(TOKEN).build()
-
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("videos", videos))
     app.add_handler(CommandHandler("get_1", get_video))
@@ -97,9 +96,5 @@ async def main():
     app.add_handler(CommandHandler("get_3", get_video))
     app.add_handler(CommandHandler("ongeza", ongeza))
     app.add_handler(CommandHandler("salio", salio))
-
-    await app.run_polling()
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
+    
+    app.run_polling()
